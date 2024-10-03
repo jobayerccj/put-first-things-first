@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     public function register(Request $request){
+
+        // TODO all of these logic should be implemented in Service class
         $data = $request->validate([
             'name'=> 'required|max:255',
             'email'=> 'required|email|unique:users',
@@ -25,6 +27,8 @@ class AuthController extends Controller
     }
 
     public function login(Request $request){
+
+        // TODO all of these logic should be implemented in Service class
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
@@ -42,6 +46,10 @@ class AuthController extends Controller
             'user' => $user,
             'token' => $token->plainTextToken
         ];
+    }
 
+    public function logout(Request $request){
+        $request->user()->tokens()->delete();
+        return ['message' => 'User logged out successfully'];
     }
 }

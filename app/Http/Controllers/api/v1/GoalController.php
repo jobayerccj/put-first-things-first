@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\KeyRole;
-use App\Services\KeyRoleService;
+use App\Models\Goal;
+use App\Services\GoalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class KeyRoleController extends Controller
+class GoalController extends Controller
 {
-    public function __construct(protected KeyRoleService $keyRoleService)
+    public function __construct(protected GoalService $goalService)
     {
     }
 
     public function index()
     {
-        return KeyRole::all();
+        return Goal::where('user_id', Auth::id())->get(['name', 'status']);
     }
 
     /**
@@ -27,53 +27,55 @@ class KeyRoleController extends Controller
      */
     public function store(Request $request)
     {
-        return $this->keyRoleService->insertKeyRole($request);
+        return $this->goalService->insertGoal($request);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param KeyRole $keyRole
+     * @param Goal $goal
      */
-    public function show(KeyRole $keyRole)
+    public function show(Goal $goal)
     {
-        return $keyRole;
+        return $goal;
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param KeyRole $keyRole
+     * @param Goal $goal
      */
-    public function update(Request $request, KeyRole $keyRole)
+    public function update(Request $request, Goal $goal)
     {
         // TODO it should be moved to service
         $data = $request->validate([
             'name' => [
                 'required',
-                Rule::unique('key_roles')->ignore($keyRole->id)
+                Rule::unique('goals')->where(function ($query) {
+                    return $query->where('user_id', Auth::id());
+                })->ignore($goal->id)
             ],
             'priority' => 'required|integer',
             'status' => 'required|bool'
         ]);
 
-        if (Auth::id() !== $keyRole->user_id) {
+        if (Auth::id() !== $goal->user_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $keyRole->update($data);
-        return $keyRole;
+        $goal->update($data);
+        return $goal;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param KeyRole $keyRole
+     * @param Goal $goal
      */
-    public function destroy(KeyRole $keyRole)
+    public function destroy(Goal $goal)
     {
-        $keyRole->delete();
+        $goal->delete();
         return ['message' => 'The Key Roles has been deleted'];
     }
 }

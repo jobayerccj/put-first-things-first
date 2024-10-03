@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class KeyRole extends Model
+class Goal extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-      'name',
-      'priority',
-      'status'
+        'name',
+        'status',
+        'key_role_id'
     ];
 
     public function user()
@@ -20,8 +20,8 @@ class KeyRole extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function goals()
+    public function keyRole()
     {
-        return $this->hasMany(Goal::class);
+        return $this->belongsTo(KeyRole::class);
     }
 }

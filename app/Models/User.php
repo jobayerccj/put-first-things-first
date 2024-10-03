@@ -45,4 +45,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function keyRoles()
+    {
+        return $this->hasMany(KeyRole::class);
+    }
+
+    public function goals()
+    {
+        return $this->hasMany(Goal::class);
+    }
 }
